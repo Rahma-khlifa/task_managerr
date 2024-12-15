@@ -6,10 +6,9 @@ from datetime import datetime
 
 # Initialisation de l'application Flask
 app = Flask(__name__)
-CORS(app)  # Permettre CORS pour les appels d'API depuis le frontend
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})  # Permettre CORS pour les appels d'API depuis le frontend
 
-# Configuration de la connexion MySQL avec SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/task_manager_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@localhost/task_manager_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialisation de SQLAlchemy
@@ -42,7 +41,7 @@ class Task(db.Model):
     completed = db.Column(db.Boolean, default=False)  
     created_at = db.Column(db.DateTime, default=datetime.utcnow)  
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  
-    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=True)  # Lien avec Project  
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)  # Lien avec Project  
 
     user = db.relationship('User', backref=db.backref('tasks', lazy=True))  
    
@@ -344,4 +343,4 @@ with app.app_context():
      # (optionnel, seulement si vous pouvez perdre les données)  
     db.create_all()
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=3001)
